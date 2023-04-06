@@ -1,0 +1,20 @@
+stages:
+  - release
+image: alpine/helm:3.2.1
+before_script:
+  - apk update  && apk add --no-cache curl
+
+helm-chart-momo-store-release:
+  stage: release
+  only:
+    changes: # как только происходит изменение в папке charts, запускается пайплайн
+      - charts/**/*
+  script:
+  # Helm charts для backend и frontend приложения упаковываются, маркируются по принципу SemVer и копируются в Nexus repository
+  - helm package $CI_PROJECT_DIR/charts/backend
+  - helm package $CI_PROJECT_DIR/charts/frontend
+
+  - curl -u $NEXUS_REPO_USER:$NEXUS_REPO_PASS $NEXUS_REPO --upload-file $CI_PROJECT_DIR/backend*.tgz
+  - curl -u $NEXUS_REPO_USER:$NEXUS_REPO_PASS $NEXUS_REPO --upload-file $CI_PROJECT_DIR/frontend*.tgz
+
+

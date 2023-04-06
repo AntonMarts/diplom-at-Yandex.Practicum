@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    app.kubernetes.io/name: momo-backend
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/component: {{ .Chart.Name }}
+    app.kubernetes.io/part-of: momo-store
+    env: "{{ .Values.environment }}"
+
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  # Стратегия развёртывания. Recreate — удалит сначала все старые Pod'ы
+  # Есть и более гибкая стратегии, например, RollingUpdate, которая будет обновлять Pod'ы порциями
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 20%
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"  
+
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+
+        ports:
+        - name: {{ .Chart.Name }}
+          containerPort: {{ .Values.service.port }}
+
+        livenessProbe:
+        # проверка живучести выполнит запрос HTTP GET
+          httpGet:
+        # путь к запросу в HTTP-запросе
+            path: /health
+        # порт, к которому должна подключиться проверка
+            port: 8081
+        # перед исполнением первой проверки подождать 15 секунд, пока стартанёт бэкенд
+          initialDelaySeconds: 15
+        # период выполнения проверки
+          periodSeconds: 30
+        # максимальное время выполнения проверки (по умолчанию 1 раз)
+          timeoutSeconds: 2
+        # сколько раз пробовать попытку, если она провалилась (по умолчанию 1 раз)
+          failureThreshold: 6
+      imagePullSecrets:
+        - name: docker-config-secret
+

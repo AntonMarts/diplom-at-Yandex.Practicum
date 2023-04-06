@@ -1,0 +1,115 @@
+#changes 0.1.6
+variables:
+  VERSION: "0.1.${CI_PIPELINE_ID}"
+  
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+include:
+  - project: 'templates/ci'
+    file: 'DockerInDockerTemplate.yml' 
+    
+build-frontend-code-job:
+  stage: build
+  image: docker:20.10.12-dind-rootless
+  before_script:
+    - until docker info; do sleep 1; done
+    # переменные CI_REGISTRY_USER, CI_REGISTRY_PASSWORD, CI_REGISTRY генерятся Гитлабом, их задавать не надо
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    #/// Создаем Docker image приложения и сохраняем его в GitLab Container Registry. Образу присваивается версия по SemVer
+    - cd frontend
+    - >
+      docker build
+      --build-arg VUE_APP_API_URL=/api
+      --tag $CI_REGISTRY_IMAGE/momo-frontend:$CI_COMMIT_SHA
+      .
+    - docker push $CI_REGISTRY_IMAGE/momo-frontend:$CI_COMMIT_SHA
+
+
+#/// запускаем тестирование кода средствами Sonarqube
+sonarqube-frontend-sast:
+  stage: test
+  dependencies:
+    - build-frontend-code-job
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]     
+  script: 
+    - cd frontend
+    - >
+      sonar-scanner 
+      -Dsonar.projectName=${SONAR_PROJECT_KEY_FRONT}
+      -Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONT}
+      -Dsonar.sources=. 
+      -Dsonar.host.url=${SONARQUBE_URL}
+      -Dsonar.login=${SONAR_LOGIN_FRONT}
+
+
+upload-frontend-release:
+  stage: release
+  only:
+    changes:
+    - frontend/*
+  needs:
+    - build-frontend-code-job
+    - sonarqube-frontend-sast
+  variables:
+    GIT_STRATEGY: none
+  image: docker:20.10.12-dind-rootless
+  before_script:
+    - until docker info; do sleep 1; done
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/momo-frontend:$CI_COMMIT_SHA
+    # если образ прошел проверки в CI (сканирование, тесты и т.д), то тегаем latest
+    - docker tag $CI_REGISTRY_IMAGE/momo-frontend:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/momo-frontend:latest
+    - docker push $CI_REGISTRY_IMAGE/momo-frontend:latest
+
+
+deploy_frontend:
+  stage: deploy
+  image: alpine:3.15.0
+  needs:
+    - upload-frontend-release
+  # если хотим сделать деплой по кнопке
+  #rules:
+  #  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  #    when: manual
+  #  - if: '$CI_COMMIT_BRANCH == "master"'
+  #    when: manual
+  before_script:
+    #/// устанавливаем необходимые пакеты
+    - apk add openssh-client bash docker docker-compose
+    - eval $(ssh-agent -s)
+    #/// сохраняем сгенеренный ранее приватный ключ для раннера
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 600 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    #/// отменям дефолтный хост для docker context, вносим в конфиг ssh параметр отмены проверки хоста
+    - unset DOCKER_HOST
+    - echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+    #/// создаем docker context и логинимся в хранилище образов
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker context create momo-frontend --docker "host=ssh://${DEV_USER}@${DEV_HOST}"
+    - docker context use momo-frontend 
+  script:
+    - "export 'VERSION=${VERSION}';
+      export 'CI_REGISTRY_USER=${CI_REGISTRY_USER}';
+      export 'CI_REGISTRY_PASSWORD=${CI_REGISTRY_PASSWORD}';
+      export 'CI_REGISTRY=${CI_REGISTRY}'; "
+    # на основе созданного контекста momo-backend запускаем docker контейнер, сначала удаляя запущеный
+    #- docker-compose --context momo-frontend rm -sf frontend
+    - docker-compose --context momo-frontend pull frontend
+    # -d запуск в состоянии deatach, --scale множитель мастабирования контейнера
+    - docker-compose --context momo-frontend up -d  --scale frontend=1
+  
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+    url: http://"$DEV_HOST":80
+

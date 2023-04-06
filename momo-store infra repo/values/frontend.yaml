@@ -1,0 +1,33 @@
+environment: production
+replicaCount: 1
+revisionHistoryLimit: 15
+annotations:
+  subnets: e9b35pagd2ttmed63moa
+  ip: 158.160.57.22
+  groupname: infra-alb
+  sg: enphc91iftpta9nne60m,enpou4e3i7f619apmuv9
+image:
+  repository: gitlab.praktikum-services.ru:5050/a.martsinovskiy/momo-store-code/momo-frontend
+  pullPolicy: IfNotPresent
+  # Вместо latest правильнее использовать версию .Chart.AppVersion в шаблоне
+  tag: "latest"
+service:
+  type: NodePort
+  port: 80
+  targetPort: 80
+  nodePort: 30080
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+ingress:
+  className: "nginx"
+  host: momo-store.martsinovskiy.ru

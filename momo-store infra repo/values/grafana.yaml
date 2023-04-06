@@ -1,0 +1,23 @@
+server:
+  # Меняем тип сервиса на NodePort
+  service:
+    nodePort: 30084
+    type: NodePort
+  # Включаем ингресс, прописываем хост, подсеть, адрес и группу
+  ingress:
+    annotations:
+      ingress.alb.yc.io/subnets: e9b35pagd2ttmed63moa
+      ingress.alb.yc.io/external-ipv4-address: 158.160.57.22
+      ingress.alb.yc.io/group-name: infra-alb
+      ingress.alb.yc.io/security-groups: enphc91iftpta9nne60m,enpou4e3i7f619apmuv9
+      # связь между балансировщиком и argocd – также через https
+      ingress.alb.yc.io/transport-security: tls
+    enabled: true
+    # указываем чтобы использовался https
+    https: true
+    tls:
+    - hosts:
+      - grafana.infra.martsinovskiy.ru
+      secretName: yc-certmgr-cert-id-fpqspl3civ9a76nsou7m
+    hosts:
+    - grafana.infra.martsinovskiy.ru
