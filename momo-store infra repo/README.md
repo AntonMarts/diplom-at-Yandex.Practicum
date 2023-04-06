@@ -7,9 +7,9 @@
 Построен кластер Kubernetes в Яндекс Облаке
 Кластер описан файлами состояния terraform, данные состояния копируются в S3 хранилище в облаке. Данные файлы расположены в папке k8s cluster.
 
-Запущен автоматический деплой при помощи ArgoCD. Постороена синхронизация на изменение ропозитория инфраструктуры. ArgoCD доступен по адресу: https://argocd.infra.martsinovskiy.ru
+Запущен автоматический деплой при помощи ArgoCD. Постороена синхронизация на изменение ропозитория инфраструктуры. Доступ к ArgoCD GUI настроен по ссылке: https://argocd.infra.martsinovskiy.ru
 
-Реализован принцип GitOps - Aps of Aps на основе ArgoCD:
+Реализован паттерн GitOps - Aps of Aps на основе ArgoCD:
 
 В папке charts расположены все Helm chart приложения и инструментов (Yandex ALB, Grafana, Prometheus, ArgoCD).
 В папке values для каждого чарта из папки charts расположены файлы с значениями переменных.
@@ -17,7 +17,7 @@
 
 Сбор метрик приложений и состояния кластера kubernetes реализован при помощи Prometheus. Визуализация данных метрик настроена в дашбордах Grafana.
 
-Дашборды доступны по адресу: https://grafana.infra.martsinovskiy.ru
+Доступ к дашбордам Grafana настроен по ссылке: https://grafana.infra.martsinovskiy.ru
 
 Настроено копирование чартов приложеения в Nexus репозиторий
 Docker img приложений скачиваются из репозитория GitLab
@@ -25,5 +25,5 @@ Docker img приложений скачиваются из репозитори
 запущен ALB load balancer в кластере. Настроен Ingress с перенаправлением трафика на домен martsinovskiy.ru
 Выпущен сертификат на Let's Encrypt.
 
-Само приложение доступно по адресу https://momo-store.martsinovskiy.ru
+Доступ к приложению настроен по ссылке https://momo-store.martsinovskiy.ru
 
