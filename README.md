@@ -17,11 +17,14 @@ _**Задачи проекта**_:
 
 - Проект разделен на 2 репозитория:
 1.  Репозиторий с кодом приложения
-  MOMO-STORE CODE REPO
+```sh
+ MOMO-STORE CODE REPO
   ├───backend 
   └───frontend
+```
 2. Репозиторий с Helm charts инфраструктуры приложения
- MOMO-STORE INFRA REPO
+```sh
+MOMO-STORE INFRA REPO
 ├───charts
 │   ├───apps
 │   ├───argo-cd
@@ -33,7 +36,7 @@ _**Задачи проекта**_:
 │   └───yc-alb-ingress-controller-chart
 ├───k8s cluster
 └───values        
-
+```
 
 
 ## Реализация цикла CI/CD приложения
