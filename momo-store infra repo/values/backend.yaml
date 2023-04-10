@@ -2,7 +2,7 @@ environment: production
 replicaCount: 1
 revisionHistoryLimit: 15
 image:
-  repository: gitlab.praktikum-services.ru:5050/a.martsinovskiy/momo-store-code/momo-backend
+  repository: <repoURL of backend folder>
   pullPolicy: IfNotPresent
   # Вместо latest правильнее использовать версию .Chart.AppVersion в шаблоне
   tag: "latest"

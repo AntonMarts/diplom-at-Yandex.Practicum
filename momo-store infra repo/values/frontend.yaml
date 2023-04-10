@@ -2,12 +2,12 @@ environment: production
 replicaCount: 1
 revisionHistoryLimit: 15
 annotations:
-  subnets: e9b35pagd2ttmed63moa
-  ip: 158.160.57.22
+  subnets: <subnetsId>
+  ip: <external ipv4 address>
   groupname: infra-alb
-  sg: enphc91iftpta9nne60m,enpou4e3i7f619apmuv9
+  sg: <security group Id's>
 image:
-  repository: gitlab.praktikum-services.ru:5050/a.martsinovskiy/momo-store-code/momo-frontend
+  repository: <repoURL of frontend folder>
   pullPolicy: IfNotPresent
   # Вместо latest правильнее использовать версию .Chart.AppVersion в шаблоне
   tag: "latest"

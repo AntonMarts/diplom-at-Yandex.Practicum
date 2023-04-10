@@ -13,8 +13,8 @@ terraform {
     bucket     = "tf-state-bucket-amarts"                   # <имя бакета>
     region     = "ru-central1"
     key        = "k8-kluster.tfstate"                       # <путь к файлу состояния в бакете>/<имя файла состояния>.tfstate
-    access_key = "YCAJEmLq4aBZPINPMVXeOFrt1"                # <идентификатор статического ключа>
-    secret_key = "YCP-Ei6Uqf5Jwa1E44ImOOJzppq5K_MWAsHKkux2" # <секретный ключ>
+    access_key = ""                                         # <идентификатор статического ключа>
+    secret_key = ""                                         # <секретный ключ>
 
     skip_region_validation      = true
     skip_credentials_validation = true

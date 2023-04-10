@@ -1,10 +1,10 @@
 configs:
   repositories:
     infra:
-      password: -hdeDpFsGtSnbxTwYrbw
+      password: <password from GilLab>
       project: default
       type: git
-      url: https://gitlab.praktikum-services.ru/a.martsinovskiy/momo-store-infra.git
+      url: <repoURL>
       username: gitlab-ci-token
 server:
   additionalApplications:
@@ -19,7 +19,7 @@ server:
         # Путь до чарта
         path: charts/apps
         # Репозиторий
-        repoURL: https://gitlab.praktikum-services.ru/a.martsinovskiy/momo-store-infra.git
+        repoURL: <repoURL>
       destination:
         # Устанавливаем все приложения в тот же неймспейс argocd
         namespace: argocd
@@ -33,10 +33,10 @@ server:
   # Включаем ингресс, прописываем хост, подсеть, адрес и группу
   ingress:
       annotations:
-          ingress.alb.yc.io/subnets: e9b35pagd2ttmed63moa
-          ingress.alb.yc.io/external-ipv4-address: 158.160.57.22
+          ingress.alb.yc.io/subnets: <subnetsId>
+          ingress.alb.yc.io/external-ipv4-address: <external ipv4 address>
           ingress.alb.yc.io/group-name: infra-alb
-          ingress.alb.yc.io/security-groups: enphc91iftpta9nne60m,enpou4e3i7f619apmuv9
+          ingress.alb.yc.io/security-groups: <security group Id's>
           # связь между балансировщиком и argocd – также через https
           ingress.alb.yc.io/transport-security: tls
       enabled: true
@@ -45,6 +45,6 @@ server:
       tls:
           - hosts:
               - argocd.infra.martsinovskiy.ru
-            secretName: yc-certmgr-cert-id-fpqspl3civ9a76nsou7m
+            secretName: yc-certmgr-cert-id-<certificateId>
       hosts:
           - argocd.infra.martsinovskiy.ru

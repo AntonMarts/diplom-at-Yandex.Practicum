@@ -7,11 +7,11 @@
 # Set local variables
 # Описание докальных переменных
 locals {
-  cloud_id              = "b1gjt1dtlm39a08npetq"  # Set your cloud Cloud ID.
+  cloud_id              = ""                      # Set your cloud Cloud ID.
                                                   # переменная для идентификатора облака
   zone_a_v4_cidr_blocks = "10.1.0.0/16"           # Set the CIDR block for subnet in the ru-central1-a availability zone.
                                                   # переменная для блока сетевых адресов кластера
-  folder_id             = "b1ggo4vqps608nl5vki2"  # Set your cloud folder ID.
+  folder_id             = ""                      # Set your cloud folder ID.
                                                   # переменная для идентификатора каталога
   k8s_version           = "1.22"                  # Set the Kubernetes version.
                                                   # переменная для версии Kubernetes

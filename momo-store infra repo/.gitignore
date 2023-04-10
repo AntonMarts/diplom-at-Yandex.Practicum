@@ -23,3 +23,5 @@ terraform.rc
 GitLab Token.txt
 *.backup
 
+key.txt
+pubkey.txt
