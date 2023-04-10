@@ -1,7 +1,8 @@
 # Дипломный проект 
 ###  курса Яндекс Практикум: DevOps для эксплуатации и разработки
 
-![Яндекс](https://user-images.githubusercontent.com/106011284/230385089-99d0ed66-9854-41b6-a57c-8dfac54279a0.svg)![Практикум](https://user-images.githubusercontent.com/106011284/230385205-fcfa20fe-532f-4c5c-9477-5a3dd609aad3.svg)
+![Яндекс](https://user-images.githubusercontent.com/106011284/230869826-fc921549-6dae-4a7b-823c-5fb4807c342e.svg)
+![Практикум](https://user-images.githubusercontent.com/106011284/230869848-aee3f5c3-0ec0-419f-ae46-0f3c69c582a3.svg)
 
 
 
@@ -90,15 +91,18 @@ go test -v ./...
 
 
 >**Теперь для любого нового приложения необходимы следующие действия:**
+>
 > Добавить чарт приложения в папку charts
+>
 > Добавить Namespace и Application в templates чарта apps
+>
 > Добавить values-файл для развёртывания
 
 Пользуясь данным паттерном на кластере установлены компоненты инфраструктуры и само приложение.
 ![k9s](https://user-images.githubusercontent.com/106011284/230458347-7b5d4445-406b-4b5f-8979-a3e489773b78.png)
 ## Мониторинг
 
-Кластер мониторится связкой дыух приложений `Grafana` и `Prometheus`. `Prometheus` снимает метрики с компонентов кластера и приложений, `Grafana` визуализирует эти данные в графическом интерфейсе и представляет их в виде удоьно настраиваемых дашбордов. Так же есть возможность подключения системы оповещений на основе `Prometheus Alert Manager`.
+Кластер мониторится связкой двух приложений `Grafana` и `Prometheus`. `Prometheus` снимает метрики с компонентов кластера и приложений, `Grafana` визуализирует эти данные в графическом интерфейсе и представляет их в виде удобно настраиваемых дашбордов. Так же есть возможность подключения системы оповещений на основе `Prometheus Alert Manager`.
 ![prometheus](https://user-images.githubusercontent.com/106011284/230458451-170aedab-30c6-4ec2-bc19-cdaae4d4d9bd.png)
 ![garfana](https://user-images.githubusercontent.com/106011284/230458438-fbe108cb-5dae-4395-8344-c3b0d5c9f7a6.png)
 
@@ -108,10 +112,10 @@ go test -v ./...
 
 Создан домен martsinovskiy.ru, выпущен сертификат **SSL** на _Let's Encrypt_. Сертификат внесен в `Certificate Manager` **Яндекс Облака**. Всем необходимым компонентам при помощи `Yandex Application Load Balancer` присвоено доменное имя:
 
-ArgoCD - argocd.infra.martsinovskiy.ru
-Grafana - grafana.infra.martsinovskiy.ru
-Prometheus - prometheus.infra.martsinovskiy.ru
-frontend приложения - momo-store.martsinovskiy.ru
+- ArgoCD - argocd.infra.martsinovskiy.ru
+- Grafana - grafana.infra.martsinovskiy.ru
+- Prometheus - prometheus.infra.martsinovskiy.ru
+- frontend приложения - momo-store.martsinovskiy.ru
 > Кластер был создан на временных ресурсах Яндекс Облака, выделенных на время прохождения курса. На текущий момент все ресурсы удалены и нет возможности пройти по указанным ссылкам
 
 ![main page](https://user-images.githubusercontent.com/106011284/230461373-bafb7239-8001-48b5-be0f-566130da1c48.png)
